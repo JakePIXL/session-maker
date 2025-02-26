@@ -1,0 +1,42 @@
+{
+  "name": "session-maker",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "tauri": "tauri"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@tailwindcss/vite": "^4.0.9",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "~2",
+    "@tauri-apps/plugin-fs": "~2",
+    "@tauri-apps/plugin-global-shortcut": "~2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-positioner": "~2",
+    "@tauri-apps/plugin-shell": "~2",
+    "chart.js": "^4.4.8",
+    "dayjs": "^1.11.13",
+    "svelte-chartjs": "^3.1.5",
+    "svelte-french-toast": "^1.2.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.9.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@tauri-apps/cli": "^2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.3",
+    "svelte": "^5.0.0",
+    "svelte-check": "^4.0.0",
+    "tailwindcss": "^4.0.9",
+    "typescript": "~5.6.2",
+    "vite": "^6.2.0"
+  }
+}

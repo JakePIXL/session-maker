@@ -21,6 +21,7 @@
     import { sessionStore, type SessionType } from "$lib/stores/sessionStore";
     import Timeline from "$lib/components/Timeline.svelte";
     import toast from "svelte-french-toast";
+    import { Accordion } from "bits-ui";
 
     let activeSession: any = null;
     let unlisten: any[] = [];
@@ -43,31 +44,31 @@
     async function startSession() {
         try {
             const id = await invoke("start_session");
-            toast.success("Session started");
+            toast.success("SESSION STARTED");
             checkActiveSession();
         } catch (error) {
-            toast.error(`Failed to start session: ${error}`);
+            toast.error(`FAILED TO START SESSION: ${error}`);
         }
     }
 
     async function stopSession() {
         try {
             const session: SessionType = await invoke("stop_session");
-            toast.success("Session stopped");
+            toast.success("SESSION STOPPED");
             $sessionStore.lastSession = session;
             checkActiveSession();
         } catch (error) {
-            toast.error(`Failed to stop session: ${error}`);
+            toast.error(`FAILED TO STOP SESSION: ${error}`);
         }
     }
 
     async function addMarker() {
         try {
             const marker = await invoke("add_marker", { label: "Marker" });
-            toast.success("Marker added");
+            toast.success("MARKER ADDED");
             checkActiveSession();
         } catch (error) {
-            toast.error(`Failed to add marker: ${error}`);
+            toast.error(`FAILED TO ADD MARKER: ${error}`);
         }
     }
 
@@ -110,104 +111,112 @@
     });
 </script>
 
-<div class="container mx-auto p-4">
-    <header class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">Dibik'aandaagozi</h1>
-        <p class="text-gray-600">Session Tracking with Timeline Markers</p>
+<div class="container mx-auto">
+    <header class="brutalist-header mt-8 mb-16">
+        <h1 class="text-4xl font-bold uppercase tracking-tight">Dibik'aandaagozi</h1>
+        <p class="text-xl uppercase mt-2 tracking-tight">Session Tracking Tool</p>
     </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="col-span-1 bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Session Control</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="col-span-1 brutalist-card">
+            <h2 class="text-2xl font-bold mb-6 uppercase tracking-tight">Session Control</h2>
 
             {#if $sessionStore.isActive}
                 <div
-                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"
+                    class="alert alert-success mb-6 transform rotate-[-0.5deg]"
                     role="alert"
                 >
-                    <strong class="font-bold">Active Session</strong>
-                    <p>
-                        Session running for {activeSession
-                            ? formatDuration(
-                                  new Date().getTime() -
-                                      new Date(
-                                          activeSession.start_time,
-                                      ).getTime(),
-                              )
-                            : "0m"}
-                    </p>
-                    <p class="text-sm">
-                        Markers: {activeSession?.markers?.length || 0}
-                    </p>
+                    <div class="uppercase text-sm absolute -top-2 -left-2 bg-black text-white px-2 py-1">STATUS</div>
+                    <strong class="font-bold block mb-2 uppercase mt-2">Active Session</strong>
+                    <div class="p-2 border border-dashed border-black">
+                        <p class="mb-2">
+                            Running for <span class="font-bold">{activeSession
+                                ? formatDuration(
+                                    new Date().getTime() -
+                                    new Date(
+                                        activeSession.start_time,
+                                    ).getTime(),
+                                )
+                                : "0m"}</span>
+                        </p>
+                        <p>
+                            Markers: <span class="font-bold">{activeSession?.markers?.length || 0}</span>
+                        </p>
+                    </div>
                 </div>
 
-                <div class="flex flex-col space-y-3">
+                <div class="flex flex-col space-y-4">
                     <button
                         on:click={stopSession}
-                        class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        class="btn btn-error transform rotate-[0.5deg]"
                     >
-                        Stop Session
+                        STOP SESSION
                     </button>
 
                     <button
                         on:click={addMarker}
-                        class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        class="btn btn-primary transform rotate-[-0.5deg]"
                     >
-                        Add Marker
+                        ADD MARKER
                     </button>
                 </div>
             {:else}
                 <div
-                    class="bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 rounded mb-4"
+                    class="alert mb-6 border-dashed transform rotate-[0.5deg]"
                     role="alert"
                 >
-                    <strong class="font-bold">No Active Session</strong>
+                    <div class="uppercase text-sm absolute -top-2 -left-2 bg-black text-white px-2 py-1">STATUS</div>
+                    <strong class="font-bold block mb-2 uppercase mt-2">No Active Session</strong>
                     <p>
-                        Press the button below or use the hotkey (Ctrl+Shift+S)
-                        to start a new session.
+                        Press the button below or use hotkey
+                        <code>Ctrl+Shift+S</code>
+                        to start.
                     </p>
                 </div>
 
                 <button
                     on:click={startSession}
-                    class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    class="btn btn-success w-full transform rotate-[-0.5deg]"
                 >
-                    Start New Session
+                    START NEW SESSION
                 </button>
             {/if}
 
-            <div class="mt-8">
-                <h3 class="text-lg font-semibold mb-2">Hotkeys</h3>
-                <ul class="text-gray-700 space-y-2">
-                    <li class="flex justify-between">
-                        <span>Start/Stop Session:</span>
-                        <code class="bg-gray-200 px-2 py-1 rounded"
-                            >Ctrl+Shift+S</code
-                        >
-                    </li>
-                    <li class="flex justify-between">
-                        <span>Add Marker:</span>
-                        <code class="bg-gray-200 px-2 py-1 rounded"
-                            >Ctrl+Shift+M</code
-                        >
-                    </li>
-                </ul>
-            </div>
+            <div class="brutalist-divider my-8"></div>
+
+            <Accordion.Root type="single" defaultValue="hotkeys" collapsible>
+                <Accordion.Item value="hotkeys">
+                    <Accordion.Header>
+                        <Accordion.Trigger>HOTKEYS</Accordion.Trigger>
+                    </Accordion.Header>
+                    <Accordion.Content>
+                        <ul class="space-y-4 pt-2">
+                            <li class="flex justify-between items-center">
+                                <span class="uppercase font-bold">Start/Stop:</span>
+                                <code>Ctrl+Shift+S</code>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span class="uppercase font-bold">Add Marker:</span>
+                                <code>Ctrl+Shift+M</code>
+                            </li>
+                        </ul>
+                    </Accordion.Content>
+                </Accordion.Item>
+            </Accordion.Root>
         </div>
 
-        <div class="col-span-1 md:col-span-2 bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Current Timeline</h2>
+        <div class="col-span-1 md:col-span-2 brutalist-card">
+            <h2 class="text-2xl font-bold mb-6 uppercase tracking-tight">Timeline View</h2>
 
             {#if activeSession}
                 <Timeline session={activeSession} />
             {:else if $sessionStore.lastSession}
                 <Timeline session={$sessionStore.lastSession} />
             {:else}
-                <div class="text-center py-10 text-gray-500">
-                    <p>No session data to display.</p>
-                    <p class="mt-2">
-                        Start a new session or view past sessions in the History
-                        tab.
+                <div class="text-center py-16 border-2 border-dashed border-black transform rotate-[0.5deg]">
+                    <p class="text-xl uppercase font-bold mb-4">No Session Data</p>
+                    <p class="text-lg">
+                        Start tracking or view past sessions in History.
                     </p>
                 </div>
             {/if}

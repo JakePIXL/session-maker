@@ -65,58 +65,63 @@
     });
 </script>
 
-<div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Session History</h1>
+<div class="container mx-auto">
+    <header class="brutalist-header mt-8 mb-16">
+        <h1 class="text-4xl font-bold uppercase tracking-tight">Session History</h1>
+        <p class="text-xl uppercase mt-2 tracking-tight">Past Recording Archives</p>
+    </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="col-span-1 bg-white rounded-lg shadow overflow-hidden">
-            <div class="border-b px-4 py-3 bg-gray-50">
-                <h2 class="font-medium text-gray-700">Past Sessions</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="col-span-1 brutalist-card">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold uppercase tracking-tight">Sessions</h2>
+                <span class="border-2 border-black px-2 py-1 font-bold">{sessions.length}</span>
             </div>
 
             {#if loading}
-                <div class="flex justify-center items-center p-6">
-                    <div
-                        class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"
-                    ></div>
+                <div class="h-64 flex justify-center items-center border-2 border-dashed border-black p-6 transform rotate-[-0.5deg]">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-16 h-4 bg-black"></div>
+                        <div class="w-24 h-4 bg-black"></div>
+                        <div class="w-8 h-4 bg-black"></div>
+                    </div>
                 </div>
             {:else if sessions.length === 0}
-                <div class="p-6 text-center text-gray-500">
-                    <p>No past sessions found.</p>
+                <div class="p-6 text-center border-2 border-dashed border-black transform rotate-[0.5deg]">
+                    <p class="font-bold uppercase">No past sessions found</p>
                 </div>
             {:else}
-                <div class="overflow-y-auto max-h-[calc(100vh-240px)]">
-                    {#each sessions as session}
+                <div class="border-2 border-black overflow-y-auto max-h-[calc(100vh-300px)]">
+                    {#each sessions as session, i}
                         <button
-                            class="border-b px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                            class:bg-blue-50={selectedSession &&
-                                selectedSession.id === session.id}
+                            class="block w-full text-left border-b-2 border-black p-4 transition-colors relative"
+                            class:bg-black={selectedSession && selectedSession.id === session.id}
+                            class:text-white={selectedSession && selectedSession.id === session.id}
+                            style={i % 2 === 0 ? "transform: rotate(-0.5deg);" : "transform: rotate(0.5deg);"}
                             on:click={() => selectSession(session)}
                         >
                             <div class="flex justify-between items-center">
                                 <div>
-                                    <div class="font-medium text-gray-800">
+                                    <div class="font-bold uppercase">
                                         {session.name ||
                                             formatDate(session.start_time)}
                                     </div>
-                                    <div class="text-sm text-gray-600">
+                                    <div class="text-sm">
                                         {formatTime(session.start_time)} - {formatTime(
                                             session.end_time,
                                         )}
                                     </div>
                                 </div>
                                 <div class="flex flex-col items-end">
-                                    <span
-                                        class="text-sm font-medium text-gray-700"
-                                    >
+                                    <span class="font-bold">
                                         {calculateDuration(
                                             session.start_time,
                                             session.end_time,
                                         )}
                                     </span>
-                                    <span class="text-xs text-gray-500">
-                                        {session.markers?.length || 0} markers
-                                    </span>
+                                    <div class="border-2 border-current px-2 mt-1 text-sm">
+                                        {session.markers?.length || 0} MARKER{session.markers?.length !== 1 ? 'S' : ''}
+                                    </div>
                                 </div>
                             </div>
                         </button>
@@ -125,23 +130,20 @@
             {/if}
         </div>
 
-        <div class="col-span-1 md:col-span-2 bg-white rounded-lg shadow p-6">
+        <div class="col-span-1 md:col-span-2 brutalist-card">
             {#if selectedSession}
-                <h2 class="text-xl font-semibold mb-4">
+                <h2 class="text-2xl font-bold mb-6 uppercase tracking-tight">
                     {selectedSession.name ||
                         formatDate(selectedSession.start_time)}
                 </h2>
 
                 <Timeline session={selectedSession} />
             {:else}
-                <div
-                    class="flex flex-col items-center justify-center h-64 text-gray-500"
-                >
-                    <p class="mb-2">Select a session to view details</p>
+                <div class="flex flex-col items-center justify-center h-64 border-2 border-dashed border-black p-8 transform rotate-[0.5deg]">
+                    <p class="mb-4 text-xl uppercase font-bold">Select a session to view details</p>
                     {#if sessions.length === 0 && !loading}
-                        <p class="text-sm">
-                            No sessions available. Start tracking to create new
-                            sessions.
+                        <p class="text-md">
+                            No sessions available. Start tracking to create new sessions.
                         </p>
                     {/if}
                 </div>

@@ -2277,6 +2277,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "marker-moment"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "dirs 5.0.1",
+ "env_logger",
+ "log",
+ "rdev",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "tauri-plugin-global-shortcut",
+ "tauri-plugin-opener",
+ "tauri-plugin-positioner",
+ "tauri-plugin-shell",
+ "thiserror 2.0.11",
+ "uuid",
+]
+
+[[package]]
 name = "markup5ever"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3779,30 +3803,6 @@ checksum = "d98238b800e0d1576d8b6e3de32827c2d74bee68bb97748dcf5071fb53965432"
 dependencies = [
  "nodrop",
  "stable_deref_trait",
-]
-
-[[package]]
-name = "session-maker"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chrono",
- "dirs 5.0.1",
- "env_logger",
- "log",
- "rdev",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "tauri-plugin-global-shortcut",
- "tauri-plugin-opener",
- "tauri-plugin-positioner",
- "tauri-plugin-shell",
- "thiserror 2.0.11",
- "uuid",
 ]
 
 [[package]]

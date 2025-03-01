@@ -37,12 +37,9 @@
 </script>
 
 <div class="min-h-screen">
-    <header class="border-b-[var(--border-width)] border-[var(--color-border)] bg-white px-6 py-6">
+    <header class="border-b-[var(--border-width)] border-[var(--color-border)] px-6 py-6">
         <div class="container mx-auto">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex-shrink-0">
-                    <span class="text-2xl font-bold tracking-tighter text-black uppercase">DIBIK'AANDAAGOZI</span>
-                </div>
+            <div class="flex flex-col md:flex-row items-center justify-center">
                 
                 <Tabs.Root value={activeTab} class="flex items-center">
                     <Tabs.List>
@@ -70,7 +67,7 @@
         </div>
     </header>
 
-    <main class="container mx-auto p-6">
+    <main class="container mx-auto">
         <slot />
     </main>
 

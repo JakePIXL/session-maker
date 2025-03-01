@@ -68,8 +68,8 @@
 
 <div class="container mx-auto">
     <header class="brutalist-header mt-8 mb-16">
-        <h1 class="text-4xl font-bold uppercase tracking-tight">Session History</h1>
-        <p class="text-xl uppercase mt-2 tracking-tight">Past Recording Archives</p>
+        <h1 class="text-4xl font-bold uppercase tracking-tight">MarkerMoment History</h1>
+        <p class="text-xl uppercase mt-2 tracking-tight">Past Recording Moments</p>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">

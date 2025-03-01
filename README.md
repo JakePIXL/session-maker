@@ -1,6 +1,6 @@
-# Session Maker
+# MarkerMoment
 
-A desktop application for session management built with Tauri, SvelteKit, and TypeScript.
+A desktop application for tracking and marking notable moments during recording sessions, built with Tauri, SvelteKit, and TypeScript.
 
 ## About
 

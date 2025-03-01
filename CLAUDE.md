@@ -1,4 +1,4 @@
-# Session Maker Development Guide
+# MarkerMoment Development Guide
 
 ## Build & Run Commands
 - `pnpm run dev` - Run frontend dev server

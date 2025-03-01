@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Import fontface */
+@font-face {
+  font-family: 'TX-02';
+  src: url('https://cdn.jakepixl.dev/fonts/TX-02-Variable.woff2'), url('https://cdn.jakepixl.dev/fonts/TX-02-Variable.tff') format('truetype'), url('https://cdn.jakepixl.dev/fonts/TX-02-Variable.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* Brutalist theme with monospace font */
 :root {
   /* Colors */
@@ -15,7 +23,7 @@
   --color-surface-alt: #e0e0e0;
   
   /* Typography */
-  --font-mono: "Courier New", monospace;
+  --font-mono: "TX-02", monospace;
   
   /* Spacing */
   --space-1: 0.25rem;
@@ -37,7 +45,7 @@
 
 /* Global styles */
 html, body {
-  font-family: var(--font-mono);
+  font-family: 'TX-02', monospace;
   background-color: var(--color-background);
   color: var(--color-foreground);
   letter-spacing: -0.03em;

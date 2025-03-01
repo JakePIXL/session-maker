@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { invoke } from "@tauri-apps/api/core";
     import Timeline from "$lib/components/Timeline.svelte";
+	import { ScrollArea } from "bits-ui";
 
     let sessions: any[] = [];
     let selectedSession: any = null;
@@ -72,7 +73,7 @@
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="col-span-1 brutalist-card">
+        <div class="col-span-1 brutalist-card h-fit">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold uppercase tracking-tight">Sessions</h2>
                 <span class="border-2 border-black px-2 py-1 font-bold">{sessions.length}</span>
@@ -91,10 +92,11 @@
                     <p class="font-bold uppercase">No past sessions found</p>
                 </div>
             {:else}
-                <div class="border-2 border-black overflow-y-auto max-h-[calc(100vh-300px)]">
+                <ScrollArea.Root>         
+	                <ScrollArea.Viewport class="h-full w-full max-h-[calc(100vh-400px)]">
                     {#each sessions as session, i}
                         <button
-                            class="block w-full text-left border-b-2 border-black p-4 transition-colors relative"
+                            class="block w-full text-left border-3 border-black p-4 transition-colors relative mb-2"
                             class:bg-black={selectedSession && selectedSession.id === session.id}
                             class:text-white={selectedSession && selectedSession.id === session.id}
                             style={i % 2 === 0 ? "transform: rotate(-0.5deg);" : "transform: rotate(0.5deg);"}
@@ -126,11 +128,15 @@
                             </div>
                         </button>
                     {/each}
-                </div>
+                    </ScrollArea.Viewport>
+                    <ScrollArea.Scrollbar orientation="vertical" >
+                        <ScrollArea.Thumb />
+                    </ScrollArea.Scrollbar>
+                </ScrollArea.Root>
             {/if}
         </div>
 
-        <div class="col-span-1 md:col-span-2 brutalist-card">
+        <div class="col-span-1 md:col-span-2 brutalist-card h-fit">
             {#if selectedSession}
                 <h2 class="text-2xl font-bold mb-6 uppercase tracking-tight">
                     {selectedSession.name ||

@@ -12,9 +12,9 @@
   "app": {
     "windows": [
       {
-        "title": "session-maker",
-        "width": 800,
-        "height": 600
+        "title": "PIXL's Session Maker",
+        "minWidth": 900,
+        "minHeight": 900
       }
     ],
     "security": {

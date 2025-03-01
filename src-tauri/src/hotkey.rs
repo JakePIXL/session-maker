@@ -1,68 +1,21 @@
 use crate::session::ActiveSession;
 use crate::storage::Storage;
-use anyhow::Result;
 use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, Emitter as _};
-use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
+use tauri_plugin_global_shortcut::{Code, Modifiers};
 
 // Shortcut definitions
-const START_STOP_SHORTCUT: (&str, Modifiers, Code) = (
+pub const DEFAULT_START_STOP_SHORTCUT: (&str, Modifiers, Code) = (
     "start_stop",
-    Modifiers::SHIFT,
-    Code::KeyS,
+    Modifiers::ALT,
+    Code::Numpad2,
 );
 
-const MARKER_SHORTCUT: (&str, Modifiers, Code) = (
+pub const DEFAULT_MARKER_SHORTCUT: (&str, Modifiers, Code) = (
     "marker",
-    Modifiers::SHIFT,
-    Code::KeyM,
+    Modifiers::ALT,
+    Code::Numpad3,
 );
-
-pub fn setup_global_hotkeys(
-    app_handle: AppHandle,
-    active_session: Arc<Mutex<Option<ActiveSession>>>,
-    storage: Arc<Mutex<Storage>>,
-) -> Result<()> {
-    let active_session_clone = active_session.clone();
-    let storage_clone = storage.clone();
-
-    // Define the start/stop shortcut
-    let start_stop_shortcut = Shortcut::new(Some(START_STOP_SHORTCUT.1), START_STOP_SHORTCUT.2);
-
-    // Define the marker shortcut
-    let marker_shortcut = Shortcut::new(Some(MARKER_SHORTCUT.1), MARKER_SHORTCUT.2);
-
-    // Register the shortcuts
-    app_handle
-        .global_shortcut()
-        .register(start_stop_shortcut.clone())?;
-    app_handle
-        .global_shortcut()
-        .register(marker_shortcut.clone())?;
-
-    // Set up the global shortcut handler
-
-    let app_handle_for_startstop = app_handle.clone();
-    let _ = app_handle.global_shortcut().on_shortcut(start_stop_shortcut, move |_app, _shortcut, _window_id| {
-        handle_start_stop(
-            &app_handle_for_startstop,
-            &active_session_clone,
-            &storage_clone,
-        );
-    });
-    
-    // Clone again for the second shortcut
-    let app_handle_for_marker = app_handle.clone();
-    let active_session_for_marker = active_session.clone();
-    let _ = app_handle.global_shortcut().on_shortcut(marker_shortcut, move |_app, _shortcut, _window_id | {
-        handle_marker(
-            &app_handle_for_marker,
-            &active_session_for_marker,
-        );
-    });
-
-    Ok(())
-}
 
 pub fn handle_start_stop(
     app_handle: &AppHandle,

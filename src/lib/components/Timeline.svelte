@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { invoke } from "@tauri-apps/api/core";
+	import { ScrollArea } from "bits-ui";
 
     export let session: any;
 
@@ -103,19 +104,19 @@
         <div class="flex space-x-2">
             <button
                 on:click={() => exportSession("JSON")}
-                class="btn btn-primary text-sm py-1 px-3 transform rotate-[0.3deg]"
+                class="btn btn-primary bg-blue-600 text-sm py-1 px-3 transform rotate-[0.3deg]"
             >
                 JSON
             </button>
             <button
                 on:click={() => exportSession("CSV")}
-                class="btn btn-primary text-sm py-1 px-3 transform rotate-[-0.3deg]"
+                class="btn btn-primary bg-blue-600 text-sm py-1 px-3 transform rotate-[-0.3deg]"
             >
                 CSV
             </button>
             <button
                 on:click={() => exportSession("Markdown")}
-                class="btn btn-primary text-sm py-1 px-3 transform rotate-[0.3deg]"
+                class="btn btn-primary bg-blue-600 text-sm py-1 px-3 transform rotate-[0.3deg]"
             >
                 MD
             </button>
@@ -172,7 +173,8 @@
         </div>
 
         {#if session.markers && session.markers.length > 0}
-            <div class="overflow-x-auto">
+            <ScrollArea.Root class="border-y-2 border-x">
+	            <ScrollArea.Viewport class="h-full w-full max-h-[200px]">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -193,7 +195,11 @@
                         {/each}
                     </tbody>
                 </table>
-            </div>
+                </ScrollArea.Viewport>          
+                <ScrollArea.Scrollbar orientation="vertical">
+                    <ScrollArea.Thumb />
+                </ScrollArea.Scrollbar>
+            </ScrollArea.Root>
         {:else}
             <div class="border-2 border-dashed border-black p-6 text-center transform rotate-[0.5deg]">
                 <p class="font-bold uppercase">

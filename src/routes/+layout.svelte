@@ -49,12 +49,9 @@
                         {#each navigation as navItem}
                             <Tabs.Trigger 
                                 value={navItem.value}
-                                asChild
-                                let:builder
                             >
                                 <a
                                     href={navItem.href}
-                                    use:builder
                                     class="relative px-4 py-2 font-bold"
                                     data-active={isActive(navItem)}
                                     style="

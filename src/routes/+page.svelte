@@ -118,7 +118,7 @@
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="col-span-1 brutalist-card">
+        <div class="col-span-1 brutalist-card h-fit">
             <h2 class="text-2xl font-bold mb-6 uppercase tracking-tight">Session Control</h2>
 
             {#if $sessionStore.isActive}
@@ -167,11 +167,6 @@
                 >
                     <div class="uppercase text-sm absolute -top-2 -left-2 bg-black text-white px-2 py-1">STATUS</div>
                     <strong class="font-bold block mb-2 uppercase mt-2">No Active Session</strong>
-                    <p>
-                        Press the button below or use hotkey
-                        <code>Ctrl+Shift+S</code>
-                        to start.
-                    </p>
                 </div>
 
                 <button
@@ -184,7 +179,7 @@
 
             <div class="brutalist-divider my-8"></div>
 
-            <Accordion.Root type="single" defaultValue="hotkeys" collapsible>
+            <Accordion.Root type="single">
                 <Accordion.Item value="hotkeys">
                     <Accordion.Header>
                         <Accordion.Trigger>HOTKEYS</Accordion.Trigger>
@@ -193,11 +188,11 @@
                         <ul class="space-y-4 pt-2">
                             <li class="flex justify-between items-center">
                                 <span class="uppercase font-bold">Start/Stop:</span>
-                                <code>Ctrl+Shift+S</code>
+                                <code>Alt+Numpad 2</code>
                             </li>
                             <li class="flex justify-between items-center">
                                 <span class="uppercase font-bold">Add Marker:</span>
-                                <code>Ctrl+Shift+M</code>
+                                <code>Alt+Numpad 3</code>
                             </li>
                         </ul>
                     </Accordion.Content>
@@ -205,7 +200,7 @@
             </Accordion.Root>
         </div>
 
-        <div class="col-span-1 md:col-span-2 brutalist-card">
+        <div class="col-span-1 md:col-span-2 brutalist-card h-fit">
             <h2 class="text-2xl font-bold mb-6 uppercase tracking-tight">Timeline View</h2>
 
             {#if activeSession}

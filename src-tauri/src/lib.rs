@@ -5,6 +5,7 @@ mod tray;
 
 use session::ActiveSession;
 use storage::Storage;
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
 use std::sync::{Arc, Mutex};
 use tauri::{
@@ -41,18 +42,10 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_global_shortcut::Builder::default().build())
+        // .plugin(tauri_plugin_global_shortcut::Builder::default().build())
         .manage(app_state)
         .setup(|app| {
             let app_handle = app.handle();
-            let app_state = app.state::<AppState>();
-
-            // Initialize global hotkeys
-            hotkey::setup_global_hotkeys(
-                app_handle.clone(),
-                app_state.active_session.clone(),
-                app_state.storage.clone(),
-            )?;
 
             // Hide the window on startup (runs in background)
             #[allow(unused_variables)]
@@ -77,7 +70,6 @@ pub fn run() {
                         button_state: MouseButtonState::Up,
                         ..
                     } => {
-                        println!("left click pressed and released");
                         let app = tray.app_handle();
                         if let Some(window) = app.get_webview_window("main") {
                             let _ = window.show();
@@ -85,11 +77,39 @@ pub fn run() {
                             let _ = window.set_focus();
                         }
                     }
-                    _ => {
-                        println!("unhandled event {event:?}");
-                    }
+                    _ => {}
                 })
                 .build(app)?;
+
+            let start_stop_shortcut = Shortcut::new(Some(hotkey::DEFAULT_START_STOP_SHORTCUT.1), hotkey::DEFAULT_START_STOP_SHORTCUT.2);
+
+            let marker_shortcut = Shortcut::new(Some(hotkey::DEFAULT_MARKER_SHORTCUT.1), hotkey::DEFAULT_MARKER_SHORTCUT.2);
+
+            app.handle().plugin(
+                tauri_plugin_global_shortcut::Builder::new().with_handler(move |app_handle, shortcut, event| {
+                    let state = app_handle.state::<AppState>();
+                    let move_session = state.active_session.clone();
+                    let move_storage = state.storage.clone();
+
+                    if shortcut == &start_stop_shortcut {
+                        if event.state() == ShortcutState::Pressed {
+                            hotkey::handle_start_stop(&app_handle, &move_session, &move_storage);
+                        }
+                    } else if shortcut == &marker_shortcut {
+                        if event.state() == ShortcutState::Pressed {
+                            // println!("Marker Button hit!");
+                            hotkey::handle_marker(&app_handle, &move_session);
+                        }
+                    }
+                })
+                .build(),
+            )?;
+
+            
+            app.global_shortcut().register(start_stop_shortcut)?;
+
+            
+            app.global_shortcut().register(marker_shortcut)?;
 
             Ok(())
         })

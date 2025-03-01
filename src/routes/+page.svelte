@@ -18,7 +18,7 @@
     import { onMount, onDestroy } from "svelte";
     import { invoke } from "@tauri-apps/api/core";
     import { listen } from "@tauri-apps/api/event";
-    import { sessionStore, type SessionType } from "$lib/stores/sessionStore";
+    import { sessionStore, type SessionType, startSessionTimer, stopSessionTimer } from "$lib/stores/sessionStore";
     import Timeline from "$lib/components/Timeline.svelte";
     import toast from "svelte-french-toast";
     import { Accordion } from "bits-ui";
@@ -31,10 +31,15 @@
             const session = await invoke("get_active_session");
             if (session) {
                 activeSession = session;
-                $sessionStore.isActive = true;
+                sessionStore.isActive = true;
+                
+                // Store last session and start the timer
+                sessionStore.lastSession = session as any;
+                startSessionTimer();
             } else {
                 activeSession = null;
-                $sessionStore.isActive = false;
+                sessionStore.isActive = false;
+                stopSessionTimer();
             }
         } catch (error) {
             console.error("Failed to check active session:", error);
@@ -45,7 +50,7 @@
         try {
             const id = await invoke("start_session");
             toast.success("SESSION STARTED");
-            checkActiveSession();
+            await checkActiveSession();
         } catch (error) {
             toast.error(`FAILED TO START SESSION: ${error}`);
         }
@@ -55,8 +60,9 @@
         try {
             const session: SessionType = await invoke("stop_session");
             toast.success("SESSION STOPPED");
-            $sessionStore.lastSession = session;
-            checkActiveSession();
+            sessionStore.lastSession = session;
+            stopSessionTimer();
+            await checkActiveSession();
         } catch (error) {
             toast.error(`FAILED TO STOP SESSION: ${error}`);
         }
@@ -84,7 +90,8 @@
 
         unlisten.push(
             await listen("session-stopped", (event) => {
-                $sessionStore.lastSession = event.payload as any;
+                sessionStore.lastSession = event.payload as any;
+                stopSessionTimer();
                 checkActiveSession();
             }),
         );
@@ -108,6 +115,7 @@
 
     onDestroy(() => {
         unlisten.forEach((unlistenFn) => unlistenFn());
+        stopSessionTimer(); // Make sure we clean up the timer on component destroy
     });
 </script>
 
@@ -121,7 +129,7 @@
         <div class="col-span-1 brutalist-card h-fit">
             <h2 class="text-2xl font-bold mb-6 uppercase tracking-tight">Session Control</h2>
 
-            {#if $sessionStore.isActive}
+            {#if sessionStore.isActive}
                 <div
                     class="alert alert-success mb-6 transform rotate-[-0.5deg]"
                     role="alert"
@@ -130,14 +138,7 @@
                     <strong class="font-bold block mb-2 uppercase mt-2">Active Session</strong>
                     <div class="p-2 border border-dashed border-black">
                         <p class="mb-2">
-                            Running for <span class="font-bold">{activeSession
-                                ? formatDuration(
-                                    new Date().getTime() -
-                                    new Date(
-                                        activeSession.start_time,
-                                    ).getTime(),
-                                )
-                                : "0m"}</span>
+                            Running for <span class="font-bold">{formatDuration(sessionStore.currentDuration)}</span>
                         </p>
                         <p>
                             Markers: <span class="font-bold">{activeSession?.markers?.length || 0}</span>
@@ -147,15 +148,15 @@
 
                 <div class="flex flex-col space-y-4">
                     <button
-                        on:click={stopSession}
-                        class="btn btn-error transform rotate-[0.5deg]"
+                        onclick={stopSession}
+                        class="border-2 border-black bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-bold py-3 transform rotate-[0.5deg] rounded shadow-sm transition-colors cursor-pointer"
                     >
                         STOP SESSION
                     </button>
 
                     <button
-                        on:click={addMarker}
-                        class="btn btn-primary transform rotate-[-0.5deg]"
+                        onclick={addMarker}
+                        class="border-2 border-black bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3 transform rotate-[-0.5deg] rounded shadow-sm transition-colors cursor-pointer"
                     >
                         ADD MARKER
                     </button>
@@ -170,8 +171,8 @@
                 </div>
 
                 <button
-                    on:click={startSession}
-                    class="btn btn-success w-full transform rotate-[-0.5deg]"
+                    onclick={startSession}
+                    class="border-2 border-black bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-bold py-3 w-full transform rotate-[-0.5deg] rounded shadow-sm transition-colors cursor-pointer"
                 >
                     START NEW SESSION
                 </button>
@@ -205,8 +206,8 @@
 
             {#if activeSession}
                 <Timeline session={activeSession} />
-            {:else if $sessionStore.lastSession}
-                <Timeline session={$sessionStore.lastSession} />
+            {:else if sessionStore.lastSession}
+                <Timeline session={sessionStore.lastSession} />
             {:else}
                 <div class="text-center py-16 border-2 border-dashed border-black transform rotate-[0.5deg]">
                     <p class="text-xl uppercase font-bold mb-4">No Session Data</p>

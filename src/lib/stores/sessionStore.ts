@@ -1,4 +1,5 @@
-// Using Svelte 5 reactive state instead of stores
+import { writable, derived, get } from 'svelte/store';
+
 // Define SessionType first
 export type SessionType = {
   id: string;
@@ -27,8 +28,8 @@ const initialState: SessionStoreType = {
   currentDuration: 0
 };
 
-// Create the store using $state for Svelte 5
-let sessionStore = $state(initialState);
+// Create the base store
+const sessionStoreBase = writable<SessionStoreType>(initialState);
 
 // Setup a timer to update the duration
 let timer: number | null = null;
@@ -42,11 +43,17 @@ export function startSessionTimer() {
   
   // Set up a timer to update the currentDuration every second
   timer = setInterval(() => {
-    if (sessionStore.isActive && sessionStore.lastSession) {
-      const startTime = new Date(sessionStore.lastSession.start_time).getTime();
-      const now = new Date().getTime();
-      sessionStore.currentDuration = now - startTime;
-    }
+    sessionStoreBase.update(state => {
+      if (state.isActive && state.lastSession) {
+        const startTime = new Date(state.lastSession.start_time).getTime();
+        const now = new Date().getTime();
+        return {
+          ...state,
+          currentDuration: now - startTime
+        };
+      }
+      return state;
+    });
   }, 1000);
 }
 
@@ -58,5 +65,45 @@ export function stopSessionTimer() {
   }
 }
 
+// Create a custom store with helper methods
+function createSessionStore() {
+  const { subscribe, set, update } = sessionStoreBase;
+
+  return {
+    subscribe,
+    set,
+    update,
+    // Helper method to set active session
+    setActiveSession: (session: SessionType) => {
+      update(state => ({
+        ...state,
+        isActive: true,
+        lastSession: session
+      }));
+      startSessionTimer();
+    },
+    // Helper method to stop active session
+    stopActiveSession: () => {
+      update(state => ({
+        ...state,
+        isActive: false
+      }));
+      stopSessionTimer();
+    },
+    // Helper method to update last session
+    setLastSession: (session: SessionType) => {
+      update(state => ({
+        ...state,
+        lastSession: session
+      }));
+    },
+    // Reset the store
+    reset: () => {
+      stopSessionTimer();
+      set(initialState);
+    }
+  };
+}
+
 // Export the session store
-export { sessionStore };
+export const sessionStore = createSessionStore();

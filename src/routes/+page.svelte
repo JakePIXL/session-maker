@@ -31,15 +31,11 @@
             const session = await invoke("get_active_session");
             if (session) {
                 activeSession = session;
-                sessionStore.isActive = true;
-                
-                // Store last session and start the timer
-                sessionStore.lastSession = session as any;
-                startSessionTimer();
+                // Set active session and start the timer
+                sessionStore.setActiveSession(session as any);
             } else {
                 activeSession = null;
-                sessionStore.isActive = false;
-                stopSessionTimer();
+                sessionStore.stopActiveSession();
             }
         } catch (error) {
             console.error("Failed to check active session:", error);
@@ -60,8 +56,8 @@
         try {
             const session: SessionType = await invoke("stop_session");
             toast.success("SESSION STOPPED");
-            sessionStore.lastSession = session;
-            stopSessionTimer();
+            sessionStore.setLastSession(session);
+            sessionStore.stopActiveSession();
             await checkActiveSession();
         } catch (error) {
             toast.error(`FAILED TO STOP SESSION: ${error}`);
@@ -90,8 +86,8 @@
 
         unlisten.push(
             await listen("session-stopped", (event) => {
-                sessionStore.lastSession = event.payload as any;
-                stopSessionTimer();
+                sessionStore.setLastSession(event.payload as any);
+                sessionStore.stopActiveSession();
                 checkActiveSession();
             }),
         );
@@ -115,7 +111,7 @@
 
     onDestroy(() => {
         unlisten.forEach((unlistenFn) => unlistenFn());
-        stopSessionTimer(); // Make sure we clean up the timer on component destroy
+        sessionStore.stopActiveSession(); // Make sure we clean up the timer on component destroy
     });
 </script>
 
@@ -129,7 +125,7 @@
         <div class="col-span-1 brutalist-card h-fit">
             <h2 class="text-2xl font-bold mb-6 uppercase tracking-tight">Session Control</h2>
 
-            {#if sessionStore.isActive}
+            {#if $sessionStore.isActive}
                 <div
                     class="alert alert-success mb-6 transform rotate-[-0.5deg]"
                     role="alert"
@@ -138,7 +134,7 @@
                     <strong class="font-bold block mb-2 uppercase mt-2">Active Session</strong>
                     <div class="p-2 border border-dashed border-black">
                         <p class="mb-2">
-                            Running for <span class="font-bold">{formatDuration(sessionStore.currentDuration)}</span>
+                            Running for <span class="font-bold">{formatDuration($sessionStore.currentDuration)}</span>
                         </p>
                         <p>
                             Markers: <span class="font-bold">{activeSession?.markers?.length || 0}</span>
@@ -206,8 +202,8 @@
 
             {#if activeSession}
                 <Timeline session={activeSession} />
-            {:else if sessionStore.lastSession}
-                <Timeline session={sessionStore.lastSession} />
+            {:else if $sessionStore.lastSession}
+                <Timeline session={$sessionStore.lastSession} />
             {:else}
                 <div class="text-center py-16 border-2 border-dashed border-black transform rotate-[0.5deg]">
                     <p class="text-xl uppercase font-bold mb-4">No Session Data</p>

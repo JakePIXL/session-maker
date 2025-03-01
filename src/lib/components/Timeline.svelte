@@ -15,11 +15,21 @@
         }
     });
     
+    // Automatically refresh the UI when the session is ongoing
+    $effect(() => {
+        if (!session.end_time) {
+            // Force an update every second to ensure the UI stays in sync
+            const tick = setTimeout(() => {
+                // This is a no-op that forces reactivity
+                sessionDuration = sessionDuration;
+            }, 1000);
+            return () => clearTimeout(tick);
+        }
+    });
+    
     // Update the UI when session duration changes
     $effect(() => {
-        if (sessionDuration && !session.end_time) {
-            updateTimelineWidth();
-        }
+        updateTimelineWidth();
     });
 
     function calculateSessionDuration() {
@@ -107,7 +117,7 @@
         updateTimelineWidth();
         window.addEventListener("resize", updateTimelineWidth);
         
-        // Set up an interval to update in real-time
+        // Set up an interval to update in real-time (calculate duration regularly)
         timer = setInterval(() => {
             if (!session.end_time) {
                 calculateSessionDuration();
@@ -141,19 +151,19 @@
         <div class="flex space-x-2">
             <button
                 onclick={() => exportSession("JSON")}
-                class="border-2 border-black bg-white hover:bg-gray-50 font-bold text-sm py-2 px-4 transform rotate-[0.3deg] rounded shadow-sm"
+                class="border-2 border-black bg-white hover:bg-gray-100 active:bg-gray-200 font-bold text-sm py-2 px-4 transform rotate-[0.3deg] rounded shadow-sm transition-colors cursor-pointer"
             >
                 JSON
             </button>
             <button
                 onclick={() => exportSession("CSV")}
-                class="border-2 border-black bg-white hover:bg-gray-50 font-bold text-sm py-2 px-4 transform rotate-[-0.3deg] rounded shadow-sm"
+                class="border-2 border-black bg-white hover:bg-gray-100 active:bg-gray-200 font-bold text-sm py-2 px-4 transform rotate-[-0.3deg] rounded shadow-sm transition-colors cursor-pointer"
             >
                 CSV
             </button>
             <button
                 onclick={() => exportSession("Markdown")}
-                class="border-2 border-black bg-white hover:bg-gray-50 font-bold text-sm py-2 px-4 transform rotate-[0.3deg] rounded shadow-sm"
+                class="border-2 border-black bg-white hover:bg-gray-100 active:bg-gray-200 font-bold text-sm py-2 px-4 transform rotate-[0.3deg] rounded shadow-sm transition-colors cursor-pointer"
             >
                 MD
             </button>
